@@ -2,10 +2,10 @@
 var cityInput = document.querySelector("#user-input");
 var cityInputEl = document.querySelector("#city-name-input");
 
-var weatherCurrent = document.querySelector("#search-result");
-let cityName  = weatherCurrent.querySelector("#name");
-let currentDate  = weatherCurrent.querySelector("#date");
-let currentIcon  = weatherCurrent.querySelector("#icon");
+var weatherTodayEl = document.querySelector("#search-result");
+// let cityName  = weatherCurrent.querySelector("#name");
+// let currentDate  = weatherCurrent.querySelector("#date");
+// let currentIcon  = weatherCurrent.querySelector("#icon");
 
 var fiveDayForecast = document.querySelector("#five-day-display");
 
@@ -32,11 +32,15 @@ var displayFiveDays = function() {
 
 //display for current weather
 var displayWeatherRepos = function(data, searchName) {
-    
-    weatherCurrent.textContent = searchName;
-    
+    var todayDate = moment();
+    weatherTodayEl.textContent = searchName + " (" + todayDate.format("MM/DD/YYYY") + ")";
+    var getTodayIcon = data.weather[0].icon;
     console.log(data);
-    console.log(searchName);
+    console.log(getTodayIcon);
+    var todayIcon = document.createElement("img");
+    todayIcon.setAttribute("src", "http://openweathermap.org/img/wn/" + getTodayIcon + "@2x.png");
+    weatherTodayEl.appendChild(todayIcon);
+    
 };
 
 var getWeatherRepos = function(city) {
