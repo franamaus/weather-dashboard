@@ -3,9 +3,10 @@ var cityInput = document.querySelector("#user-input");
 var cityInputEl = document.querySelector("#city-name-input");
 
 var weatherTodayEl = document.querySelector("#search-result");
-// let cityName  = weatherCurrent.querySelector("#name");
-// let currentDate  = weatherCurrent.querySelector("#date");
-// let currentIcon  = weatherCurrent.querySelector("#icon");
+var todayTempEl = document.querySelector("#today-temperature");
+var todayHumEl = document.querySelector("#today-humidity");
+var todayWindEl = document.querySelector("#today-wind");
+var todayUvEl = document.querySelector("#today-uv");
 
 var fiveDayForecast = document.querySelector("#five-day-display");
 
@@ -30,28 +31,65 @@ var displayFiveDays = function() {
     }
 };
 
-//display for current weather
+// display for current weather
 var displayWeatherRepos = function(data, searchName) {
+    // get today's date using moment.js
     var todayDate = moment();
+    // print city name and today's date
     weatherTodayEl.textContent = searchName + " (" + todayDate.format("MM/DD/YYYY") + ")";
+    // get icon for current weather condition and append to end of <h4>
     var getTodayIcon = data.weather[0].icon;
-    console.log(data);
-    console.log(getTodayIcon);
     var todayIcon = document.createElement("img");
     todayIcon.setAttribute("src", "http://openweathermap.org/img/wn/" + getTodayIcon + "@2x.png");
     weatherTodayEl.appendChild(todayIcon);
-    
+    // display for temp, hum, wind
+    var getTodayTemp = data.main.temp;
+    todayTempEl.textContent = getTodayTemp;
+    // display for hum
+    var getTodayHum = data.main.humidity;
+    todayHumEl.textContent = getTodayHum;
+    // display for wind
+    var getTodayWind = data.wind.speed;
+    todayWindEl.textContent = getTodayWind;
+
+    var lat = data.coord.lat;
+    var lon = data.coord.lon;
+    var uvApiUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=6d5123381b3db4fc3cae3d2e936e56de&lat=" + lat + "&lon=" +lon;
+    fetch(uvApiUrl).then(function(response) {
+        if (response.ok) {
+            response.json().then(function(uvData) {
+                displayWeatherUvRepos(uvData);
+            });
+        } else {
+            alert("Error: " + response.statusText);
+        }
+    });
 };
 
+// display current uv index
+var displayWeatherUvRepos = function(uvIndex) {
+    var getTodayUv = uvIndex.value;
+    todayUvEl.textContent = getTodayUv;
+    if (getTodayUv <= 3) {
+        document.getElementById("today-uv").style.backgroundColor = "green";
+    }
+    else if (getTodayUv <= 6) {
+        document.getElementById("today-uv").style.backgroundColor = "yellow";
+    }
+    else {
+        document.getElementById("today-uv").style.backgroundColor = "red";
+    }
+};
+
+// fetch repos for weather
 var getWeatherRepos = function(city) {
     // creates an API endpoint
     var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
     
-    // makes HTTP request
+    // makes HTTP request for current weather conditions
     fetch(apiUrl).then(function(response) {
         if (response.ok) {
             response.json().then(function(data) {
-                // displayRepos(data.items, language);
                 displayWeatherRepos(data, city);
             });
         } else {
@@ -81,7 +119,5 @@ var buttonSubmitHandler = function(event) {
 };
 
 displayFiveDays(); 
-
-
 cityInput.addEventListener("submit", buttonSubmitHandler);
 

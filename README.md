@@ -18,12 +18,12 @@ Languages:
 * CSS
 * Javascript
 
-Libraries:
+Third-party API:
 * Bootstrap
 * Moment.js
 
-Server-side content from:
-* OpenWeather API [using API key: 6d5123381b3db4fc3cae3d2e936e56de]
+Server-side API:
+* OpenWeather API [API key: 6d5123381b3db4fc3cae3d2e936e56de]
 	
 ### Setup
 To run this project, open link in browser.
