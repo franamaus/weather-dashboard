@@ -1,6 +1,7 @@
-// greater than sign selects direct child of city-search, without- would select any #name 
+// greater than sign selects direct child of city-search, if without, it would select any #name 
 var cityInput = document.querySelector("#user-input");
 var cityInputEl = document.querySelector("#city-name-input");
+var pastSearchsEl = document.querySelector("#saved-searches");
 
 var weatherTodayEl = document.querySelector("#search-result");
 var todayTempEl = document.querySelector("#today-temperature");
@@ -11,30 +12,65 @@ var todayUvEl = document.querySelector("#today-uv");
 var fiveDayForecast = document.querySelector("#five-day-display");
 
 // display for 5-day forecast
-var displayFiveDays = function() {
-    var createTemplate = function(id, date, img, temp, hum) {
+var displayForecastRepos = function(data) {
+    
+    var createTemplate = function(id, forecastDates, img, temp, hum) {
+        
         let div = document.createElement('div')
         div.classList.add("date-forecast-card");
         div.setAttribute('id', `date-${id}`)
-        var template = `<h4 class="forecast-date">${date}</h4>
-                        <img src="${img}"/>
+        var template = `<h4 class="forecast-date">${forecastDates}</h4>
+                        <img src="${getForecastIcon}"/>
                         <p>Temp: ${temp} &deg;F</p>
                         <p>Humidity: ${hum}%</p>
                         `
-
         div.innerHTML = template; 
         return div;
     }
 
-    for(let i =1; i < 6; i++) {
-        fiveDayForecast.appendChild(createTemplate(i, "8/16/2020", "#", "85", "45"));
+    // loop to get 5-day forecast dates
+    for(var i = 0; i < data.list.length; i++)  {
+        var getForecastDate = data.list[i].dt_txt;
+        var forecastTime = getForecastDate.split(" ");
+        var forecastDates = forecastTime[0].split("-");
+
+        var getForecastIcon = data.list[i].weather[0].icon;
+        //console.log(getForecastIcon);
+
+        if (forecastTime[1] === "12:00:00") {
+            fiveDayForecast.appendChild(createTemplate(i, `${forecastDates[1]}/${forecastDates[2]}/${forecastDates[0]}`, 
+            `http://openweathermap.org/img/wn/${getForecastIcon}@2x.png`, 
+            "85", 
+            "45"));
+        }
+        
     }
 };
 
+sortByDate = {};
+
+var sortForecastRepos = function(data) {
+    let i = 0;
+    let j = 0;
+    var filteredData = [];
+    while (i < 5 && j < data.list.length) {
+        tempData = data.list[j];
+        if (tempData.dt_txt.includes("12:00:00")) {
+            filteredData.push(tempData);
+            i++;
+        }
+        j++;
+    }
+    console.log(filteredData)
+
+
+     // to be cont
+}
 // display for current weather
 var displayWeatherRepos = function(data, searchName) {
     // get today's date using moment.js
     var todayDate = moment();
+    console.log(todayDate);
     // print city name and today's date
     weatherTodayEl.textContent = searchName + " (" + todayDate.format("MM/DD/YYYY") + ")";
     // get icon for current weather condition and append to end of <h4>
@@ -98,26 +134,75 @@ var getWeatherRepos = function(city) {
       });
 };
 
-var getForecastRepos = function() {
-
+var getForecastRepos = function(city) {
+    // creates an API endpoint
+    var apiUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
+        
+    // makes HTTP request for current weather conditions
+    fetch(apiUrl).then(function(response) {
+        if (response.ok) {
+            response.json().then(function(data) {
+                sortForecastRepos(data);
+            });
+        } else {
+            alert("Error: " + response.statusText);
+        }
+    });
 };
 
+var loadPastSearchButtons = function() {
+    // var savedArray = window.localStorage.getItem("city");
+    // console.log(savedArray);
+    // for(let i = 0; i < savedArray.length; i++) {
+    //     var city = savedArray[i];
+    //     var savedSearchButton = `
+    //     <button class="btn btn-outline-secondary btn-primary" type="sunmit">${city}
+    //     </button>
+    //     `
+    //     var button = document.createElement("button");
+    //     button.innerHTML = savedSearchButton;
+    //     pastSearchsEl.appendChild(button);
+    // }
+}
+
+// dynamically created buttons using searches
+var pastSearchButton = function() {
+    // retreives saved input and creates buttons
+    var savedArray = window.localStorage.getItem("city");
+    console.log(savedArray);
+}
+
+//var savedSearch = [];
+
+// button click event that takes user input
 var buttonSubmitHandler = function(event) {
     event.preventDefault();
     // get value from input element
     var cityName = cityInputEl.value.trim();
-    
+    pastSearchButton();
     if (cityName) {
         // go to fetch data on current weather
         getWeatherRepos(cityName);
         // go to fetch data for 5-day forecast
-        // getForecastRepos(cityName);
+        getForecastRepos(cityName);
+        // push input into array to be saved in localStorage
+        // savedSearch.push(cityName);
+        // empty out input area
         cityInputEl.value = "";
     } else {
       alert("Please enter a valid city name.");
     }
+
+    var getStorage = JSON.parse(window.localStorage.getItem("city"));
+    let savedSearch;
+    if(!getStorage) {
+        savedSearch = [];
+    } else {
+        savedSearch = getStorage;
+    }
+    savedSearch.push(cityName);
+    window.localStorage.setItem("city", JSON.stringify(savedSearch));
 };
 
-displayFiveDays(); 
 cityInput.addEventListener("submit", buttonSubmitHandler);
-
+loadPastSearchButtons();
