@@ -12,9 +12,11 @@ var todayUvEl = document.querySelector("#today-uv");
 var fiveDayForecast = document.querySelector("#five-day-display");
 
 // display for 5-day forecast
-var displayForecastRepos = function(data) {
+var displayForecastRepos = function(dailyData) {
     
-    var createTemplate = function(id, forecastDates, img, temp, hum) {
+    console.log(dailyData)
+
+    var createTemplate = function(id, forecastDates, getForecastIcon, temp, hum) {
         
         let div = document.createElement('div')
         div.classList.add("date-forecast-card");
@@ -28,27 +30,27 @@ var displayForecastRepos = function(data) {
         return div;
     }
 
-    // loop to get 5-day forecast dates
-    for(var i = 0; i < data.list.length; i++)  {
-        var getForecastDate = data.list[i].dt_txt;
-        var forecastTime = getForecastDate.split(" ");
-        var forecastDates = forecastTime[0].split("-");
+    for (var i = 0; i < dailyData.length; i++) {
+        var forecastDates = dailyData[i].dt_txt.split(' ');
+        var dateArray = forecastDates[0].split("-");
+        var getForecastIcon = dailyData[i].weather[0].icon;
+        var temp = dailyData[i].main.temp;
+        var hum = dailyData[i].main.humidity
+        console.log(getForecastIcon)
 
-        var getForecastIcon = data.list[i].weather[0].icon;
-        //console.log(getForecastIcon);
-
-        if (forecastTime[1] === "12:00:00") {
-            fiveDayForecast.appendChild(createTemplate(i, `${forecastDates[1]}/${forecastDates[2]}/${forecastDates[0]}`, 
+        fiveDayForecast.appendChild(createTemplate(
+            i, 
+            `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`, 
             `http://openweathermap.org/img/wn/${getForecastIcon}@2x.png`, 
-            "85", 
-            "45"));
-        }
-        
+            `${temp}`, 
+            `${hum}`
+        ));
     }
 };
 
-sortByDate = {};
+//sortByDate = {};
 
+// sort through the 5-day forecast to get only 5 points out of the 40 points of data
 var sortForecastRepos = function(data) {
     let i = 0;
     let j = 0;
@@ -61,18 +63,17 @@ var sortForecastRepos = function(data) {
         }
         j++;
     }
-    console.log(filteredData)
-
-
-     // to be cont
+    //console.log(filteredData)
+    // to be cont
+    displayForecastRepos(filteredData)
 }
 // display for current weather
-var displayWeatherRepos = function(data, searchName) {
+var displayWeatherRepos = function(data) {
     // get today's date using moment.js
     var todayDate = moment();
     console.log(todayDate);
     // print city name and today's date
-    weatherTodayEl.textContent = searchName + " (" + todayDate.format("MM/DD/YYYY") + ")";
+    weatherTodayEl.textContent = data.name + " (" + todayDate.format("MM/DD/YYYY") + ")";
     // get icon for current weather condition and append to end of <h4>
     var getTodayIcon = data.weather[0].icon;
     var todayIcon = document.createElement("img");
@@ -126,7 +127,7 @@ var getWeatherRepos = function(city) {
     fetch(apiUrl).then(function(response) {
         if (response.ok) {
             response.json().then(function(data) {
-                displayWeatherRepos(data, city);
+                displayWeatherRepos(data);
             });
         } else {
             alert("Error: " + response.statusText);
