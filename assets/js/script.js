@@ -41,7 +41,7 @@ var displayForecastRepos = function(dailyData) {
         fiveDayForecast.appendChild(createTemplate(
             i, 
             `${dateArray[1]}/${dateArray[2]}/${dateArray[0]}`, 
-            `http://openweathermap.org/img/wn/${getForecastIcon}@2x.png`, 
+            `https://openweathermap.org/img/wn/${getForecastIcon}@2x.png`, 
             `${temp}`, 
             `${hum}`
         ));
@@ -77,7 +77,7 @@ var displayWeatherRepos = function(data) {
     // get icon for current weather condition and append to end of <h4>
     var getTodayIcon = data.weather[0].icon;
     var todayIcon = document.createElement("img");
-    todayIcon.setAttribute("src", "http://openweathermap.org/img/wn/" + getTodayIcon + "@2x.png");
+    todayIcon.setAttribute("src", "https://openweathermap.org/img/wn/" + getTodayIcon + "@2x.png");
     weatherTodayEl.appendChild(todayIcon);
     // display for temp, hum, wind
     var getTodayTemp = data.main.temp;
@@ -91,7 +91,7 @@ var displayWeatherRepos = function(data) {
 
     var lat = data.coord.lat;
     var lon = data.coord.lon;
-    var uvApiUrl = "http://api.openweathermap.org/data/2.5/uvi?appid=6d5123381b3db4fc3cae3d2e936e56de&lat=" + lat + "&lon=" +lon;
+    var uvApiUrl = "https://api.openweathermap.org/data/2.5/uvi?appid=6d5123381b3db4fc3cae3d2e936e56de&lat=" + lat + "&lon=" +lon;
     fetch(uvApiUrl).then(function(response) {
         if (response.ok) {
             response.json().then(function(uvData) {
@@ -121,7 +121,7 @@ var displayWeatherUvRepos = function(uvIndex) {
 // fetch repos for weather
 var getWeatherRepos = function(city) {
     // creates an API endpoint
-    var apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
+    var apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
     
     // makes HTTP request for current weather conditions
     fetch(apiUrl).then(function(response) {
@@ -137,7 +137,7 @@ var getWeatherRepos = function(city) {
 
 var getForecastRepos = function(city) {
     // creates an API endpoint
-    var apiUrl = "http://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
+    var apiUrl = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&units=imperial&APPID=6d5123381b3db4fc3cae3d2e936e56de"
         
     // makes HTTP request for current weather conditions
     fetch(apiUrl).then(function(response) {
