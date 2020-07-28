@@ -148,32 +148,52 @@ var getForecastRepos = function(city) {
     });
 };
 
-var loadPastSearchButtons = function() {
-    var savedArray = window.localStorage.getItem("city");
-    console.log(savedArray);
-    for(let i = 0; i < savedArray.length; i++) {
-        var city = savedArray[i];
-        var savedSearchButton = `
-        <button class="btn btn-outline-secondary btn-primary" type="sunmit">${city}
-        </button>
-        `
-        var button = document.createElement("button");
-        button.innerHTML = savedSearchButton;
-        pastSearchsEl.appendChild(button);
-    }
-}
+// var loadPastSearchButtons = function() {
+//     var savedArray = window.localStorage.getItem("city");
+//     console.log(savedArray);
+//     for(let i = 0; i < savedArray.length; i++) {
+//         var city = savedArray[i];
+//         var savedSearchButton = `
+//         <button class="btn btn-outline-secondary btn-primary" type="sunmit">${city}
+//         </button>
+//         `
+//         var button = document.createElement("button");
+//         button.innerHTML = savedSearchButton;
+//         pastSearchsEl.appendChild(button);
+//     }
+// }
 
 // dynamically created buttons using searches
-var pastSearchButton = function() {
-    // retreives saved input and creates buttons
-    var savedArray = window.localStorage.getItem("city");
-    console.log(savedArray);
-}
+// var pastSearchButton = function() {
+//     // retreives saved input and creates buttons
+//     var savedArray = JSON.parse(window.localStorage.getItem("city"));
+//     console.log(savedArray);
+
+//     var createButtons = function(id, name) {
+//         let div = document.createElement("div");
+//         div.classList.add("past-search-button");
+//         //button.setAttribute('id', `button-${id}`)
+//         var template = `<button type="click" class="col-12 btn btn-outline-secondary btn-primary" id="button-${id}">
+//                         ${name}
+//                         </button>
+//                         `
+//         div.innerHTML = template; 
+//         return div;
+//     }
+//     for (var i = 0; i < savedArray.length; i++) {
+//         var city = savedArray[i];
+//         pastSearchsEl.appendChild(createButtons(i, city));
+//     }
+// }
+
+// var savedButtonSubmitHandler = function(event) {
+//     event.preventDefault();
+//     fiveDayForecast.innerHTML = "";
+// }
 
 // button click event that takes user input
 var buttonSubmitHandler = function(event) {
     event.preventDefault();
-    pastSearchButton();
     fiveDayForecast.innerHTML = "";
     // get value from input element
     var cityName = cityInputEl.value.trim();
@@ -197,7 +217,7 @@ var buttonSubmitHandler = function(event) {
         savedSearchArr.push(cityName);
         window.localStorage.setItem("city", JSON.stringify(savedSearchArr));
     } else {
-        if (localStorageArr.includes(`${cityName}`) == true ){
+        if (localStorageArr.includes(`${cityName}`) == true){
             savedSearchArr = localStorageArr;
             console.log("Repeats not saved!")
         } else {
@@ -209,4 +229,6 @@ var buttonSubmitHandler = function(event) {
 };
 
 cityInput.addEventListener("submit", buttonSubmitHandler);
+//pastSearchButton.addEventListener("submit", savedButtonSubmitHandler)
 //loadPastSearchButtons();
+//pastSearchButton();
